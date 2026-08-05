@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}HR Dashboard{% endblock %}
+{% block content %}
+<h1>HR Dashboard</h1>
+
+<section class="card">
+  <div class="card-header">
+    <h2>Policy documents</h2>
+    <form action="/hr/documents" method="post" enctype="multipart/form-data" class="upload-form">
+      <input type="file" name="file" accept="application/pdf" required>
+      <button type="submit">Upload PDF</button>
+    </form>
+  </div>
+
+  <table class="doc-table">
+    <thead>
+      <tr><th>Filename</th><th>Uploaded</th><th>Uploaded by</th><th>Chunks</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for document, chunk_count in documents %}
+      <tr>
+        <td>📄 {{ document.filename }}</td>
+        <td>{{ document.uploaded_at.strftime("%b %d, %Y") }}</td>
+        <td>{{ document.uploader.email }}</td>
+        <td><span class="pill">{{ chunk_count }}</span></td>
+        <td>
+          <form action="/hr/documents/{{ document.id }}/delete" method="post" onsubmit="return confirm('Delete this document?');">
+            <button type="submit" class="link-button danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty-state">No documents uploaded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <div class="card-header">
+    <h2>Unanswered questions</h2>
+    <span class="pill pill-count">{{ pending_questions|length }}</span>
+  </div>
+
+  {% for question in pending_questions %}
+  <div class="pending-item">
+    <p class="qa-question">{{ question.question_text }}</p>
+    <p class="qa-meta">Asked by <strong>{{ question.asker.email }}</strong> · {{ question.asked_at.strftime("%b %d, %Y %I:%M %p") }}</p>
+    <form action="/hr/questions/{{ question.id }}/resolve" method="post" class="resolve-form">
+      <textarea name="hr_answer" placeholder="Type an answer for this employee..." required></textarea>
+      <button type="submit">Answer &amp; resolve</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="empty-state">No pending questions. Nice work! 🎉</p>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,43 @@
+<div class="qa-pair">
+  <div class="msg msg-user">
+    <div class="bubble">{{ question.question_text }}</div>
+    <span class="msg-avatar avatar-user">You</span>
+  </div>
+
+  {% if question.status.value == "answered_by_ai" %}
+  <div class="msg msg-agent">
+    <span class="msg-avatar avatar-agent">AI</span>
+    <div class="bubble bubble-agent">
+      <p>{{ question.ai_answer }}</p>
+      {% if question.sources %}
+      <div class="sources">
+        <span class="sources-label">Source{{ "s" if "," in question.sources else "" }}:</span>
+        {% for src in question.sources.split(", ") %}
+        <span class="source-chip">📄 {{ src }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% elif question.status.value == "pending" %}
+  <div class="msg msg-agent">
+    <span class="msg-avatar avatar-agent">AI</span>
+    <div class="bubble bubble-pending">
+      <p>I couldn't find a confident answer in the policy documents, so I've forwarded this to HR. You'll see their answer here once it's resolved.</p>
+      <span class="badge badge-pending">⏳ Pending with HR</span>
+    </div>
+  </div>
+
+  {% elif question.status.value == "resolved_by_hr" %}
+  <div class="msg msg-agent">
+    <span class="msg-avatar avatar-hr">HR</span>
+    <div class="bubble bubble-resolved">
+      <p>{{ question.hr_answer }}</p>
+      <span class="badge badge-resolved">✓ Answered by HR</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="msg-time">{{ question.asked_at.strftime("%b %d, %Y %I:%M %p") }}</div>
+</div>

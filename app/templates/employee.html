@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Ask a Question — HR Assistant{% endblock %}
+{% block body_class %}chat-page{% endblock %}
+{% block content %}
+<div class="chat-shell">
+  <div class="chat-scroll" id="question-history">
+    {% for question in history %}
+      {% include "_question_result.html" %}
+    {% else %}
+      <div class="empty-chat">
+        <span class="empty-chat-icon">💬</span>
+        <p>Ask me anything about company HR policy — vacation, benefits, leave, remote work, and more.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <form id="question-form" class="ask-form">
+    <textarea name="question_text" placeholder="Ask a question about HR policy..." required></textarea>
+    <button type="submit">
+      <span class="btn-label">Ask</span>
+    </button>
+  </form>
+</div>
+
+<script src="/static/js/employee.js"></script>
+{% endblock %}
